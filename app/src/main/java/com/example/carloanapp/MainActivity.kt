@@ -5,15 +5,22 @@ import android.widget.RadioGroup
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -23,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,11 +73,9 @@ fun CarloanApp(modifier: Modifier = Modifier) {
 
         // Image 
         Image(
-            painter = painterResource(id = R.drawable.car),
-            contentDescription = "Car Image",
-            modifier = Modifier
-                .size(150.dp)
-                .padding(bottom = 16.dp)
+            painter = painterResource(R.drawable.car),
+            contentDescription = "Graduation cap",
+
         )
 
         Text(
@@ -145,11 +151,11 @@ fun CarloanApp(modifier: Modifier = Modifier) {
                 val numberOfPayments = selectedYears * 12
 
                 monthlyPayment =
-                    if (monthlyRate == 0.0) {
+                    if (monthlyRate.toDouble() == 0.0) {
                         loanAmount / numberOfPayments
                     } else {
                         (monthlyRate * loanAmount) /
-                                (1 - Math.pow(1 + monthlyRate, -numberOfPayments.toDouble()))
+                                (1 - Math.pow((1 + monthlyRate).toDouble(), -numberOfPayments.toDouble()))
                     }
             },
             modifier = Modifier.fillMaxWidth()
