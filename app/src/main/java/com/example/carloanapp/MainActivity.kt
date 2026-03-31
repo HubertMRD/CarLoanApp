@@ -49,20 +49,20 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun CarloanApp(modifier: Modifier = Modifier,carLoanViewModel: carLoanViewModel = viewModel()) {
-
-    if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT){
-        CarloanAppProtrait(modifier,carLoanViewModel)
-    }else{
-        CarloanAppLandscape(modifier,carLoanViewModel)
+fun CarloanApp(
+    modifier: Modifier = Modifier,
+    carLoanViewModel: CarLoanViewModel = viewModel()
+) {
+    if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT) {
+        CarloanAppPortrait(modifier, carLoanViewModel)
+    } else {
+        CarloanAppLandscape(modifier, carLoanViewModel)
     }
-
 }
 
-
-
 @Composable
-fun CarloanAppProtrait(modifier: Modifier, carLoanViewModel: carLoanViewModel) {
+fun CarloanAppPortrait(modifier: Modifier, vm: CarLoanViewModel) {
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -72,89 +72,57 @@ fun CarloanAppProtrait(modifier: Modifier, carLoanViewModel: carLoanViewModel) {
 
         Image(
             painter = painterResource(R.drawable.car),
-            contentDescription = "Car",
-
-            )
-
-        Text(
-            text = "Car Loan Calculator",
-            modifier = Modifier.padding(bottom = 20.dp)
+            contentDescription = "Car"
         )
 
+        Text("Car Loan Calculator", modifier = Modifier.padding(bottom = 20.dp))
 
         Text("Car Price")
         TextField(
-            value = price,
-            onValueChange = { price = it },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            value = vm.price,
+            onValueChange = { vm.price = it },
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-
         Text("Down Payment")
         TextField(
-            value = downPayment,
-            onValueChange = { downPayment = it },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            value = vm.downPayment,
+            onValueChange = { vm.downPayment = it },
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-
-        Text("Loan Length (Years)",)
-
+        Text("Loan Length (Years)")
         val yearOptions = listOf(1, 2, 3, 4)
 
         yearOptions.forEach { year ->
             Row(
-                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.selectable(
-                    selected = selectedYears == year,
-                    onClick = { selectedYears = year },
-                    role = Role.RadioButton
+                    selected = vm.selectedYears == year,
+                    onClick = { vm.selectedYears = year }
                 )
             ) {
-                RadioButton(
-                    selected = selectedYears == year,
-                    onClick = null
-                )
+                RadioButton(selected = vm.selectedYears == year, onClick = null)
                 Text("$year years")
             }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text("Interest Rate: ${String.format("%.1f", interestRate)}%")
+        Text("Interest Rate: ${String.format("%.1f", vm.interestRate)}%")
         Slider(
-            value = interestRate,
-            onValueChange = { interestRate = it },
+            value = vm.interestRate,
+            onValueChange = { vm.interestRate = it },
             valueRange = 0f..15f
         )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-
         Button(
-            onClick = {
-
-                val carPrice = price.toDoubleOrNull() ?: 0.0
-                val down = downPayment.toDoubleOrNull() ?: 0.0
-                val loanAmount = carPrice - down
-
-                val monthlyRate = interestRate / 100 / 12
-                val numberOfPayments = selectedYears * 12
-
-                monthlyPayment =
-                    if (monthlyRate.toDouble() == 0.0) {
-                        loanAmount / numberOfPayments
-                    } else {
-                        (monthlyRate * loanAmount) /
-                                (1 - Math.pow((1 + monthlyRate).toDouble(), - numberOfPayments.toDouble()))
-                    }
-            },
+            onClick = { vm.calculate() },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Calculate Monthly Payment")
@@ -162,115 +130,69 @@ fun CarloanAppProtrait(modifier: Modifier, carLoanViewModel: carLoanViewModel) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(
-            text = "Monthly Payment: $${String.format("%.2f", monthlyPayment)}",
-        )
+        Text("Monthly Payment: $${String.format("%.2f", vm.monthlyPayment)}")
     }
 }
 
+
 @Composable
-fun CarloanAppLandscape(){
-    Column(
+fun CarloanAppLandscape(modifier: Modifier, vm: CarLoanViewModel) {
+
+    Row(
         modifier = modifier
             .fillMaxSize()
-            .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(20.dp)
     ) {
 
         Image(
             painter = painterResource(R.drawable.car),
             contentDescription = "Car",
+            modifier = Modifier
+                .weight(1f)
+                .padding(10.dp)
+        )
 
+      
+        Column(
+            modifier = Modifier
+                .weight(2f)
+                .padding(10.dp)
+        ) {
+
+            Text("Car Loan Calculator")
+
+            Text("Car Price")
+            TextField(
+                value = vm.price,
+                onValueChange = { vm.price = it }
             )
 
-        Text(
-            text = "Car Loan Calculator",
-            modifier = Modifier.padding(bottom = 20.dp)
-        )
+            Text("Down Payment")
+            TextField(
+                value = vm.downPayment,
+                onValueChange = { vm.downPayment = it }
+            )
 
+            Spacer(modifier = Modifier.height(10.dp))
 
-        Text("Car Price")
-        TextField(
-            value = price,
-            onValueChange = { price = it },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
+            Text("Interest: ${String.format("%.1f", vm.interestRate)}%")
+            Slider(
+                value = vm.interestRate,
+                onValueChange = { vm.interestRate = it }
+            )
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-
-        Text("Down Payment")
-        TextField(
-            value = downPayment,
-            onValueChange = { downPayment = it },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-
-        Text("Loan Length (Years)",)
-
-        val yearOptions = listOf(1, 2, 3, 4)
-
-        yearOptions.forEach { year ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.selectable(
-                    selected = selectedYears == year,
-                    onClick = { selectedYears = year },
-                    role = Role.RadioButton
-                )
-            ) {
-                RadioButton(
-                    selected = selectedYears == year,
-                    onClick = null
-                )
-                Text("$year years")
+            Button(onClick = { vm.calculate() }) {
+                Text("Calculate")
             }
+
+            Text("Monthly: $${String.format("%.2f", vm.monthlyPayment)}")
         }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text("Interest Rate: ${String.format("%.1f", interestRate)}%")
-        Slider(
-            value = interestRate,
-            onValueChange = { interestRate = it },
-            valueRange = 0f..15f
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-
-        Button(
-            onClick = {
-
-                val carPrice = price.toDoubleOrNull() ?: 0.0
-                val down = downPayment.toDoubleOrNull() ?: 0.0
-                val loanAmount = carPrice - down
-
-                val monthlyRate = interestRate / 100 / 12
-                val numberOfPayments = selectedYears * 12
-
-                monthlyPayment =
-                    if (monthlyRate.toDouble() == 0.0) {
-                        loanAmount / numberOfPayments
-                    } else {
-                        (monthlyRate * loanAmount) /
-                                (1 - Math.pow((1 + monthlyRate).toDouble(), - numberOfPayments.toDouble()))
-                    }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Calculate Monthly Payment")
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Text(
-            text = "Monthly Payment: $${String.format("%.2f", monthlyPayment)}",
-        )
     }
 }
+
+
+
+
+
+
+
