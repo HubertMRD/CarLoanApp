@@ -190,7 +190,41 @@ fun CarloanAppLandscape(modifier: Modifier, vm: CarLoanViewModel) {
     }
 }
 
+/*
 
+class CarLoanViewModel : ViewModel() {
+
+    // User inputs
+    var price by mutableStateOf("")
+    var downPayment by mutableStateOf("")
+    var selectedYears by mutableStateOf(1)
+    var interestRate by mutableStateOf(5f)
+
+    // Output
+    var monthlyPayment by mutableStateOf(0.0)
+
+    // Calculation function
+    fun calculate() {
+        val carPrice = price.toDoubleOrNull() ?: 0.0
+        val down = downPayment.toDoubleOrNull() ?: 0.0
+        val loanAmount = carPrice - down
+
+        val monthlyRate = interestRate / 100 / 12
+        val numberOfPayments = selectedYears * 12
+
+        monthlyPayment =
+            if (monthlyRate == 0f) {
+                loanAmount / numberOfPayments
+            } else {
+                (monthlyRate * loanAmount) /
+                        (1 - (1 + monthlyRate).pow(-numberOfPayments))
+            }
+    }
+}
+
+
+
+*/
 
 
 
