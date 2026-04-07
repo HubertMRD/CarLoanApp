@@ -53,12 +53,15 @@ fun CarloanApp(
     modifier: Modifier = Modifier,
     carLoanViewModel: CarLoanViewModel = viewModel()
 ) {
-    if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT) {
+    val orientation = LocalConfiguration.current.orientation
+
+    if (orientation == Configuration.ORIENTATION_PORTRAIT) {
         CarloanAppPortrait(modifier, carLoanViewModel)
     } else {
         CarloanAppLandscape(modifier, carLoanViewModel)
     }
 }
+
 
 @Composable
 fun CarloanAppPortrait(modifier: Modifier, vm: CarLoanViewModel) {
@@ -72,7 +75,8 @@ fun CarloanAppPortrait(modifier: Modifier, vm: CarLoanViewModel) {
 
         Image(
             painter = painterResource(R.drawable.car),
-            contentDescription = "Car"
+            contentDescription = "Car",
+            modifier = Modifier.size(180.dp)
         )
 
         Text("Car Loan Calculator", modifier = Modifier.padding(bottom = 20.dp))
@@ -100,13 +104,19 @@ fun CarloanAppPortrait(modifier: Modifier, vm: CarLoanViewModel) {
 
         yearOptions.forEach { year ->
             Row(
-                modifier = Modifier.selectable(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .selectable(
+                        selected = vm.selectedYears == year,
+                        onClick = { vm.selectedYears = year }
+                    )
+                    .padding(vertical = 4.dp)
+            ) {
+                RadioButton(
                     selected = vm.selectedYears == year,
                     onClick = { vm.selectedYears = year }
                 )
-            ) {
-                RadioButton(selected = vm.selectedYears == year, onClick = null)
-                Text("$year years")
+                Text("$year years", modifier = Modifier.padding(start = 8.dp))
             }
         }
 
@@ -134,7 +144,6 @@ fun CarloanAppPortrait(modifier: Modifier, vm: CarLoanViewModel) {
     }
 }
 
-
 @Composable
 fun CarloanAppLandscape(modifier: Modifier, vm: CarLoanViewModel) {
 
@@ -150,9 +159,9 @@ fun CarloanAppLandscape(modifier: Modifier, vm: CarLoanViewModel) {
             modifier = Modifier
                 .weight(1f)
                 .padding(10.dp)
+                .size(200.dp)
         )
 
-      
         Column(
             modifier = Modifier
                 .weight(2f)
@@ -164,24 +173,50 @@ fun CarloanAppLandscape(modifier: Modifier, vm: CarLoanViewModel) {
             Text("Car Price")
             TextField(
                 value = vm.price,
-                onValueChange = { vm.price = it }
+                onValueChange = { vm.price = it },
+                modifier = Modifier.fillMaxWidth()
             )
 
             Text("Down Payment")
             TextField(
                 value = vm.downPayment,
-                onValueChange = { vm.downPayment = it }
+                onValueChange = { vm.downPayment = it },
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(10.dp))
 
+            Text("Loan Length (Years)")
+            val yearOptions = listOf(1, 2, 3, 4)
+
+            yearOptions.forEach { year ->
+                Row(
+                    modifier = Modifier
+                        .selectable(
+                            selected = vm.selectedYears == year,
+                            onClick = { vm.selectedYears = year }
+                        )
+                        .padding(vertical = 4.dp)
+                ) {
+                    RadioButton(
+                        selected = vm.selectedYears == year,
+                        onClick = { vm.selectedYears = year }
+                    )
+                    Text("$year years", modifier = Modifier.padding(start = 8.dp))
+                }
+            }
+
             Text("Interest: ${String.format("%.1f", vm.interestRate)}%")
             Slider(
                 value = vm.interestRate,
-                onValueChange = { vm.interestRate = it }
+                onValueChange = { vm.interestRate = it },
+                valueRange = 0f..15f
             )
 
-            Button(onClick = { vm.calculate() }) {
+            Button(
+                onClick = { vm.calculate() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text("Calculate")
             }
 
@@ -190,20 +225,19 @@ fun CarloanAppLandscape(modifier: Modifier, vm: CarLoanViewModel) {
     }
 }
 
+
 /*
+
 
 class CarLoanViewModel : ViewModel() {
 
-    // User inputs
     var price by mutableStateOf("")
     var downPayment by mutableStateOf("")
     var selectedYears by mutableStateOf(1)
     var interestRate by mutableStateOf(5f)
 
-    // Output
     var monthlyPayment by mutableStateOf(0.0)
 
-    // Calculation function
     fun calculate() {
         val carPrice = price.toDoubleOrNull() ?: 0.0
         val down = downPayment.toDoubleOrNull() ?: 0.0
@@ -225,8 +259,4 @@ class CarLoanViewModel : ViewModel() {
 
 
 */
-
-
-
-
 
