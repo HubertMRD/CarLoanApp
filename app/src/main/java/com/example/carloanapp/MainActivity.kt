@@ -6,27 +6,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.input.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -48,6 +36,12 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+
+
+
+
+
+
 @Composable
 fun CarloanApp(
     modifier: Modifier = Modifier,
@@ -61,7 +55,6 @@ fun CarloanApp(
         CarloanAppLandscape(modifier, carLoanViewModel)
     }
 }
-
 
 @Composable
 fun CarloanAppPortrait(modifier: Modifier, vm: CarLoanViewModel) {
@@ -85,7 +78,8 @@ fun CarloanAppPortrait(modifier: Modifier, vm: CarLoanViewModel) {
         TextField(
             value = vm.price,
             onValueChange = { vm.price = it },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -94,7 +88,8 @@ fun CarloanAppPortrait(modifier: Modifier, vm: CarLoanViewModel) {
         TextField(
             value = vm.downPayment,
             onValueChange = { vm.downPayment = it },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -144,6 +139,8 @@ fun CarloanAppPortrait(modifier: Modifier, vm: CarLoanViewModel) {
     }
 }
 
+
+
 @Composable
 fun CarloanAppLandscape(modifier: Modifier, vm: CarLoanViewModel) {
 
@@ -174,14 +171,16 @@ fun CarloanAppLandscape(modifier: Modifier, vm: CarLoanViewModel) {
             TextField(
                 value = vm.price,
                 onValueChange = { vm.price = it },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
             Text("Down Payment")
             TextField(
                 value = vm.downPayment,
                 onValueChange = { vm.downPayment = it },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -227,7 +226,11 @@ fun CarloanAppLandscape(modifier: Modifier, vm: CarLoanViewModel) {
 
 
 /*
+package com.example.carloanapp
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import kotlin.math.pow
 
 class CarLoanViewModel : ViewModel() {
 
@@ -235,27 +238,23 @@ class CarLoanViewModel : ViewModel() {
     var downPayment by mutableStateOf("")
     var selectedYears by mutableStateOf(1)
     var interestRate by mutableStateOf(5f)
-
     var monthlyPayment by mutableStateOf(0.0)
 
     fun calculate() {
-        val carPrice = price.toDoubleOrNull() ?: 0.0
-        val down = downPayment.toDoubleOrNull() ?: 0.0
-        val loanAmount = carPrice - down
+        val p = price.toDoubleOrNull() ?: 0.0
+        val d = downPayment.toDoubleOrNull() ?: 0.0
+        val loanAmount = p - d
 
-        val monthlyRate = interestRate / 100 / 12
-        val numberOfPayments = selectedYears * 12
+        val r = (interestRate / 100) / 12
+        val n = selectedYears * 12
 
-        monthlyPayment =
-            if (monthlyRate == 0f) {
-                loanAmount / numberOfPayments
-            } else {
-                (monthlyRate * loanAmount) /
-                        (1 - (1 + monthlyRate).pow(-numberOfPayments))
-            }
+        monthlyPayment = if (r == 0f) {
+            loanAmount / n
+        } else {
+            (loanAmount * r * (1 + r).pow(n)) / ((1 + r).pow(n) - 1)
+        }
     }
 }
-
 
 
 */
